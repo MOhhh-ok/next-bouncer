@@ -22,12 +22,13 @@ export const zodAdapter = {
 } as const;
 
 // ヘルパー関数: Zodスキーマから型安全なValidationAdapterを作成
+// スキーマをクロージャに保持することで、parseメソッドでschemaパラメータが不要に
 export function createZodValidation<T extends ZodType>(
   schema: T,
-): ValidationAdapter<T, z.infer<T>> {
+): ValidationAdapter<z.infer<T>> {
   return {
-    parse: async (s: T, input: unknown) => {
-      return zodAdapter.parse(s, input);
+    parse: async (input: unknown) => {
+      return zodAdapter.parse(schema, input);
     },
   };
 }

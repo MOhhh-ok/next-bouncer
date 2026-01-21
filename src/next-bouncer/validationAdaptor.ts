@@ -1,10 +1,9 @@
 import { Result } from "./types";
 
 // コアの型定義 - 型推論をサポート
-export interface ValidationAdapter<Schema = any, Output = any> {
-  // パース関数
+export interface ValidationAdapter<Output = any> {
+  // パース関数（スキーマは内包される）
   parse: (
-    schema: Schema,
     input: unknown,
   ) => Promise<
     | { ok: true; data: Output }
@@ -14,7 +13,6 @@ export interface ValidationAdapter<Schema = any, Output = any> {
 
 // スキーマから出力型を推論するヘルパー型
 export type InferOutput<VAdapter> = VAdapter extends ValidationAdapter<
-  any,
   infer Output
 > ? Output
   : never;
