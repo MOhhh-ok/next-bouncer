@@ -5,19 +5,21 @@ import { ValidationAdapter } from "./validationAdaptor";
 
 type ActionConfig<
   Input,
+  Output,
   ResultData,
 > = {
-  validation: ValidationAdapter<Input>;
-  handler: (params: Input) => Promise<Result<ResultData>>;
+  validation: ValidationAdapter<Input, Output>;
+  handler: (params: Output) => Promise<Result<ResultData>>;
 };
 
 export function createAction<
   Input,
+  Output,
   ResultData = unknown,
->(config: ActionConfig<Input, ResultData>) {
+>(config: ActionConfig<Input, Output, ResultData>) {
   const { validation, handler } = config;
 
-  return async (params: { input: unknown }) => {
+  return async (params: { input: Input }) => {
     // バリデーション実行
     const parsed = await validation.parse(params.input);
 
@@ -35,19 +37,20 @@ export function createAction<
 
 if (import.meta.main) {
   (async () => {
-    const schema = z.object({ b: z.string() });
+    const schema = z.object({ b: z.coerce.number() });
 
     const test = createAction({
       validation: createZodValidation(schema),
       handler: (input) => {
-        // ここで input は { b: string } として推論される
+        // ここで input は { b: number } として推論される（output型）
         console.log(input.b);
-        return Promise.resolve({ ok: true, data: {} });
+        return Promise.resolve({ ok: true, data: { ddd: 456 } });
       },
     });
 
     console.log("start");
-    const res = await test({ input: { abc: "123" } });
+    // input型は { b: string | number } として推論される
+    const res = await test({ input: { b: "123" } });
     console.log(res);
   })();
 }
