@@ -1,6 +1,6 @@
 import z from "zod";
-import { ValidationAdapter } from "./adaptors/validationAdaptor";
-import { createZodValidation } from "./adaptors/zod";
+import { ValidationAdapter } from "./adaptors/validations/validationAdaptor";
+import { zodValidation } from "./adaptors/validations/zod";
 import { Result } from "./types";
 
 type ActionConfig<
@@ -40,7 +40,7 @@ if (import.meta.main) {
     const schema = z.object({ b: z.coerce.number() });
 
     const test = createAction({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: (input) => {
         // ここで input は { b: number } として推論される（output型）
         console.log(input.b);

@@ -1,4 +1,4 @@
-import { Result } from "../types";
+import { Result } from "../../types";
 
 // コアの型定義 - InputとOutputの型推論をサポート
 export interface ValidationAdapter<Input = any, Output = Input> {

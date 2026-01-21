@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { z } from "zod";
+import type { ValidationAdapter } from "../adaptors/validations/validationAdaptor";
+import { zodValidation } from "../adaptors/validations/zod";
 import { createAction } from "../createAction";
-import { createZodValidation } from "../adaptors/zod";
-import type { ValidationAdapter } from "../adaptors/validationAdaptor";
 
 describe("Integration Tests", () => {
   test("should handle end-to-end user registration flow", async () => {
@@ -14,7 +14,7 @@ describe("Integration Tests", () => {
     });
 
     const registerAction = createAction({
-      validation: createZodValidation(registrationSchema),
+      validation: zodValidation(registrationSchema),
       handler: async (params) => {
         // データベース保存のシミュレーション
         const user = {
@@ -58,7 +58,7 @@ describe("Integration Tests", () => {
           productId: z.string(),
           quantity: z.number().min(1),
           price: z.number().positive(),
-        })
+        }),
       ).min(1),
       shippingAddress: z.object({
         street: z.string(),
@@ -69,12 +69,12 @@ describe("Integration Tests", () => {
     });
 
     const createOrderAction = createAction({
-      validation: createZodValidation(orderSchema),
+      validation: zodValidation(orderSchema),
       handler: async (params) => {
         // 合計金額計算
         const totalAmount = params.items.reduce(
           (sum, item) => sum + item.price * item.quantity,
-          0
+          0,
         );
 
         // 在庫確認のシミュレーション
@@ -137,7 +137,7 @@ describe("Integration Tests", () => {
     });
 
     const createUser = createAction({
-      validation: createZodValidation(createUserSchema),
+      validation: zodValidation(createUserSchema),
       handler: async (params) => {
         const userId = Math.floor(Math.random() * 1000);
         const token = `TOKEN-${userId}-${Date.now()}`;
@@ -150,7 +150,7 @@ describe("Integration Tests", () => {
     });
 
     const verifyUser = createAction({
-      validation: createZodValidation(verifyUserSchema),
+      validation: zodValidation(verifyUserSchema),
       handler: async (params) => {
         // トークン検証のシミュレーション
         const isValidToken = params.token.startsWith(`TOKEN-${params.userId}`);
@@ -240,12 +240,11 @@ describe("Integration Tests", () => {
           };
         }
 
-        const permissions =
-          normalizedRole === "admin"
-            ? ["read", "write", "delete"]
-            : normalizedRole === "user"
-            ? ["read", "write"]
-            : ["read"];
+        const permissions = normalizedRole === "admin"
+          ? ["read", "write", "delete"]
+          : normalizedRole === "user"
+          ? ["read", "write"]
+          : ["read"];
 
         return {
           ok: true,
@@ -294,7 +293,7 @@ describe("Integration Tests", () => {
     let attemptCount = 0;
 
     const unreliableAction = createAction({
-      validation: createZodValidation(dataSchema),
+      validation: zodValidation(dataSchema),
       handler: async (params) => {
         attemptCount++;
 
@@ -337,12 +336,10 @@ describe("Integration Tests", () => {
     });
 
     const fetchAction = createAction({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: async (params) => {
         // 非同期処理のシミュレーション
-        await new Promise((resolve) =>
-          setTimeout(resolve, Math.random() * 100)
-        );
+        await new Promise((resolve) => setTimeout(resolve, Math.random() * 100));
 
         return {
           ok: true,
@@ -378,10 +375,10 @@ describe("Integration Tests", () => {
     });
 
     const processUserAction = createAction({
-      validation: createZodValidation(pipelineSchema),
+      validation: zodValidation(pipelineSchema),
       handler: async (params) => {
         const age = Math.floor(
-          (Date.now() - params.birthdate.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
+          (Date.now() - params.birthdate.getTime()) / (365.25 * 24 * 60 * 60 * 1000),
         );
 
         return {

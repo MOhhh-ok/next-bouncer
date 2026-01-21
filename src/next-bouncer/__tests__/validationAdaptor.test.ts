@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { ValidationAdapter } from "../adaptors/validationAdaptor";
+import type { ValidationAdapter } from "../adaptors/validations/validationAdaptor";
 
 describe("ValidationAdapter", () => {
   test("should have correct type structure", () => {

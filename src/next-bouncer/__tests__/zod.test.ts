@@ -1,11 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { z } from "zod";
-import { createZodValidation } from "../adaptors/zod";
+import { zodValidation } from "../adaptors/validations/zod";
 
 describe("createZodValidation", () => {
   test("should validate simple string schema", async () => {
     const schema = z.string();
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const result = await validator.parse("hello");
 
@@ -17,7 +17,7 @@ describe("createZodValidation", () => {
 
   test("should fail on invalid string input", async () => {
     const schema = z.string();
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const result = await validator.parse(123);
 
@@ -33,7 +33,7 @@ describe("createZodValidation", () => {
       name: z.string(),
       age: z.number(),
     });
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const result = await validator.parse({ name: "Alice", age: 30 });
 
@@ -49,7 +49,7 @@ describe("createZodValidation", () => {
       name: z.string(),
       age: z.number(),
     });
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const result = await validator.parse({ name: "Alice", age: "thirty" });
 
@@ -64,7 +64,7 @@ describe("createZodValidation", () => {
     const schema = z.object({
       id: z.coerce.number(),
     });
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const result = await validator.parse({ id: "123" });
 
@@ -85,7 +85,7 @@ describe("createZodValidation", () => {
         createdAt: z.string(),
       }),
     });
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const validInput = {
       user: {
@@ -108,7 +108,7 @@ describe("createZodValidation", () => {
 
   test("should validate arrays", async () => {
     const schema = z.array(z.number());
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const result = await validator.parse([1, 2, 3]);
 
@@ -120,7 +120,7 @@ describe("createZodValidation", () => {
 
   test("should fail on invalid array items", async () => {
     const schema = z.array(z.number());
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const result = await validator.parse([1, "two", 3]);
 
@@ -132,7 +132,7 @@ describe("createZodValidation", () => {
       required: z.string(),
       optional: z.string().optional(),
     });
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const result = await validator.parse({ required: "value" });
 
@@ -148,7 +148,7 @@ describe("createZodValidation", () => {
       name: z.string(),
       role: z.string().default("user"),
     });
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const result = await validator.parse({ name: "Charlie" });
 
@@ -166,7 +166,7 @@ describe("createZodValidation", () => {
     }).refine((data) => data.password === data.confirmPassword, {
       message: "Passwords must match",
     });
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const resultValid = await validator.parse({
       password: "password123",
@@ -190,7 +190,7 @@ describe("createZodValidation", () => {
     const schema = z.object({
       email: z.string().email("Invalid email format"),
     });
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const result = await validator.parse({ email: "not-an-email" });
 
@@ -202,7 +202,7 @@ describe("createZodValidation", () => {
 
   test("should handle union types", async () => {
     const schema = z.union([z.string(), z.number()]);
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const resultString = await validator.parse("hello");
     expect(resultString.ok).toBe(true);
@@ -221,9 +221,9 @@ describe("createZodValidation", () => {
         await new Promise((resolve) => setTimeout(resolve, 10));
         return val.length > 5;
       },
-      { message: "String must be longer than 5 characters" }
+      { message: "String must be longer than 5 characters" },
     );
-    const validator = createZodValidation(schema);
+    const validator = zodValidation(schema);
 
     const resultValid = await validator.parse("hello world");
     expect(resultValid.ok).toBe(true);

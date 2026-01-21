@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { z } from "zod";
-import type { ValidationAdapter } from "../adaptors/validationAdaptor";
-import { createZodValidation } from "../adaptors/zod";
+import type { ValidationAdapter } from "../adaptors/validations/validationAdaptor";
+import { zodValidation } from "../adaptors/validations/zod";
 import { createAction } from "../createAction";
 import type { Result } from "../types";
 
@@ -13,7 +13,7 @@ describe("createAction", () => {
     });
 
     const action = createAction({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: async (params) => {
         return {
           ok: true,
@@ -40,7 +40,7 @@ describe("createAction", () => {
     });
 
     const action = createAction({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: async () => {
         return { ok: true, data: { success: true } };
       },
@@ -63,7 +63,7 @@ describe("createAction", () => {
     });
 
     const action = createAction({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: async (params) => {
         if (params.id === 999) {
           return {
@@ -91,7 +91,7 @@ describe("createAction", () => {
     });
 
     const action = createAction({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: async (params) => {
         // paramsのcountは数値として推論される
         return {
@@ -124,7 +124,7 @@ describe("createAction", () => {
     });
 
     const action = createAction({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: async (params) => {
         return {
           ok: true,
@@ -210,7 +210,7 @@ describe("createAction", () => {
     });
 
     const action = createAction({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: async (params) => {
         await new Promise((resolve) => setTimeout(resolve, params.delay));
         return {
@@ -240,7 +240,7 @@ describe("createAction", () => {
     });
 
     const action = createAction({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: async () => {
         return { ok: true, data: undefined };
       },
@@ -274,7 +274,7 @@ describe("createAction", () => {
       z.output<typeof schema>,
       CustomResultData
     >({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: async (params) => {
         return {
           ok: true,
@@ -307,7 +307,7 @@ describe("createAction", () => {
     });
 
     const action = createAction({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: async (params) => {
         return {
           ok: true,
@@ -337,7 +337,7 @@ describe("createAction", () => {
     });
 
     const action = createAction({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: async () => {
         return { ok: true, data: { success: true } };
       },
@@ -355,7 +355,7 @@ describe("createAction", () => {
     const schema = z.any();
 
     const action = createAction({
-      validation: createZodValidation(schema),
+      validation: zodValidation(schema),
       handler: async (params) => {
         return {
           ok: true,

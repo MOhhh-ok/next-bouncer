@@ -1,2 +1,2 @@
-export * from "./validationAdaptor";
-export * from "./zod";
+export * from "./validations/validationAdaptor";
+export * from "./validations/zod";

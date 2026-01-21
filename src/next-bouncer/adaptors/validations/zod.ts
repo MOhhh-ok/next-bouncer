@@ -4,7 +4,7 @@ import { ValidationAdapter } from "./validationAdaptor";
 // Zodスキーマから型安全なValidationAdapterを作成
 // スキーマをクロージャに保持することで、parseメソッドでschemaパラメータが不要に
 // z.input<T>でinput型を、z.output<T>でoutput型を推論
-export function createZodValidation<T extends ZodType>(
+export function zodValidation<T extends ZodType>(
   schema: T,
 ): ValidationAdapter<z.input<T>, z.output<T>> {
   return {
