@@ -1,10 +1,14 @@
 {
-  "name": "next-bouncer",
+  "name": "next-bouncer-workspace",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "src/next-bouncer"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:lib": "cd src/next-bouncer && bun run build",
     "start": "next start",
     "test": "bun test",
     "test:watch": "bun test --watch"

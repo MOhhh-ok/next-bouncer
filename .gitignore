@@ -19,6 +19,7 @@
 
 # production
 /build
+src/next-bouncer/dist
 
 # misc
 .DS_Store
