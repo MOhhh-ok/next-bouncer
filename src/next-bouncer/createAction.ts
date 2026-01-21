@@ -7,19 +7,20 @@ type ActionConfig<
   Input,
   Output,
   ResultData,
-> // Actor,
- = {
+  Actor,
+> = {
   validation: ValidationAdapter<Input, Output>;
-  // getActor: (a: { params: Output }) => Promise<Actor>;
-  handler: (a: { params: Output }) => Promise<Result<ResultData>>;
+  getActor: (a: { params: Output }) => Promise<Actor>;
+  handler: (a: { params: Output; actor: Actor }) => Promise<Result<ResultData>>;
 };
 
 export function createAction<
   Input,
   Output,
   ResultData = unknown,
->(config: ActionConfig<Input, Output, ResultData>) {
-  const { validation, handler } = config;
+  Actor = unknown,
+>(config: ActionConfig<Input, Output, ResultData, Actor>) {
+  const { validation, handler, getActor } = config;
 
   return async (params: Input) => {
     // バリデーション実行
@@ -32,16 +33,23 @@ export function createAction<
       } as Result<ResultData>;
     }
 
+    // アクター取得
+    const actor = await getActor({ params: parsed.data });
+
     // ハンドラー実行
-    return await handler({ params: parsed.data });
+    return await handler({ params: parsed.data, actor });
   };
 }
 
 if (import.meta.main) {
   const test = createAction({
     validation: zodValidation(z.object({ a: z.coerce.number() })),
-    handler: async ({ params }) => {
-      console.log("running handler", params);
+    getActor: async ({ params }) => {
+      console.log("getting actor", params);
+      return { userId: "test-user" };
+    },
+    handler: async ({ params, actor }) => {
+      console.log("running handler", { params, actor });
       return {
         ok: true,
         data: params.a,
