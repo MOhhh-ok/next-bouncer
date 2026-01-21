@@ -1,13 +1,17 @@
+import z from "zod";
 import { ValidationAdapter } from "./adaptors/validations/validationAdaptor";
+import { zodValidation } from "./adaptors/validations/zod";
 import { Result } from "./types";
 
 type ActionConfig<
   Input,
   Output,
   ResultData,
-> = {
+> // Actor,
+ = {
   validation: ValidationAdapter<Input, Output>;
-  handler: (params: Output) => Promise<Result<ResultData>>;
+  // getActor: (a: { params: Output }) => Promise<Actor>;
+  handler: (a: { params: Output }) => Promise<Result<ResultData>>;
 };
 
 export function createAction<
@@ -17,9 +21,9 @@ export function createAction<
 >(config: ActionConfig<Input, Output, ResultData>) {
   const { validation, handler } = config;
 
-  return async (params: { input: Input }) => {
+  return async (params: Input) => {
     // バリデーション実行
-    const parsed = await validation.parse(params.input);
+    const parsed = await validation.parse(params);
 
     if (!parsed.ok) {
       return {
@@ -29,6 +33,21 @@ export function createAction<
     }
 
     // ハンドラー実行
-    return await handler(parsed.data);
+    return await handler({ params: parsed.data });
   };
+}
+
+if (import.meta.main) {
+  const test = createAction({
+    validation: zodValidation(z.object({ a: z.coerce.number() })),
+    handler: async ({ params }) => {
+      console.log("running handler", params);
+      return {
+        ok: true,
+        data: params.a,
+      };
+    },
+  });
+  const res = await test({ a: "123" });
+  console.log("result", res);
 }
