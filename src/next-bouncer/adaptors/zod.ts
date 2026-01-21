@@ -1,5 +1,5 @@
 import z, { ZodType } from "zod";
-import { ValidationAdapter } from "../validationAdaptor";
+import { ValidationAdapter } from "./validationAdaptor";
 
 // Zodスキーマから型安全なValidationAdapterを作成
 // スキーマをクロージャに保持することで、parseメソッドでschemaパラメータが不要に
